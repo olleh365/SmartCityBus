@@ -1,0 +1,32 @@
+/* src/components/Sidebar.css */
+
+.left-sidebar {
+    background-color: #13151A;
+    color: #fff;
+    width: 250px;
+    height: 100%;
+    position: fixed;
+    overflow-y: auto;
+    top: 0; 
+    border-right: 3px solid #26272C;;
+  }
+  
+  .sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin-top: 80px;
+  }
+  
+  .sidebar-menu li {
+    padding: 10px 20px;
+  }
+  
+  .sidebar-menu li a {
+    text-decoration: none;
+    color: #fff;
+  }
+  
+  .sidebar-menu li a:hover {
+    background-color: #555;
+  }
+  
