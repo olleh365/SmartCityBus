@@ -1,0 +1,9 @@
+/* src/components/Home.css */
+
+.home-container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden; 
+  }
+

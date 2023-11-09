@@ -1,0 +1,92 @@
+/* src/components/BusInfo.css */
+
+.bus-info-container {
+  background-color: #13151A;
+  width: 300px;
+  height: 100%;
+  position: fixed;
+  right: 0px;
+  top: 0;
+  overflow-y: auto;
+  z-index: 1;
+}
+
+.loading-image {
+  width: 25px; 
+  height: 25px;
+}
+
+.centered-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.loading-indicator {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.hide-button {
+    background-color: #956EE7; 
+    color: #fff; 
+    padding: 5px 10px; 
+    border: none; 
+    border-radius: 5px; 
+    cursor: pointer;
+    font-size: 16px; 
+    float : right;
+    margin-top: 60px; 
+    margin-right: 4px; 
+  }
+  
+  .hide-button:hover {
+    background-color: #A68AEA; 
+  }
+
+.bus-arrival-info {
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #3B3E49;
+  }
+  
+  .bus-item {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin: 5px 0;
+    border-radius: 5px;
+    background-color: #1D1E20;
+    list-style-type: none;
+    margin-left: -42px;
+    border-bottom: 4px solid #956EE7;
+  }
+  
+  h3 {
+    border-bottom: 2px solid #555;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+  }
+  
+  .bus-data {
+    margin-left: 4px;
+    margin-right: 4px;
+    margin-top: 55px;
+    color: #fff;
+  }
+
+  h2 {
+    margin-top: 65px;
+    margin-left: 45px;
+  }
+  
