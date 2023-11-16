@@ -11,12 +11,26 @@ const BusInfo = ({  selectedBusStop, gybBusData, dgbBusData, error, hideBusInfo,
   const [busMarkers, setBusMarkers] = useState([]);
   
 
-  const createMarker = (map, latitude, longitude, title) => {
+  const createMarker = (map, latitude, longitude, title, vehicleno) => {
     const marker = new window.kakao.maps.Marker({
       position: new window.kakao.maps.LatLng(latitude, longitude),
       map: map,
       title: title,
     }); 
+    const iwRemoveable = true;
+    const infowindow = new window.kakao.maps.InfoWindow({
+      content:
+      `
+      <div>
+        <p>${vehicleno}</p>
+        <button onclick="openChat('${vehicleno}')">Chat</button>
+      </div>
+    `, removable : iwRemoveable,
+    });
+    window.kakao.maps.event.addListener(marker, 'click', function () {
+      infowindow.open(map, marker);
+    });
+
     return marker;
   };
 
@@ -41,9 +55,8 @@ const BusInfo = ({  selectedBusStop, gybBusData, dgbBusData, error, hideBusInfo,
         if (busLocationData.length > 0) {
           if (map) {
             const newMarkers = busLocationData.map((location) => {
-              const { gpslati, gpslong, nodenm } = location;
-              console.log('Creating marker for:', nodenm, gpslati, gpslong);
-              return createMarker(map, gpslati, gpslong, nodenm);
+              const { gpslati, gpslong, nodenm, vehicleno } = location;
+              return createMarker(map, gpslati, gpslong, nodenm, vehicleno);
             });
             setBusMarkers(newMarkers);
           }
