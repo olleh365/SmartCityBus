@@ -14,8 +14,8 @@ const ChatInput = ({selectedVehicleno}) => {
 
   const [text, setText] = useState("");
   const [img, setImg] = useState(null);
-
   const {currentUser} = useContext(AuthContext)
+
   const handleSend = async () => {
     if(img){
       const storageRef = ref(storage,uuid());
@@ -52,11 +52,17 @@ const ChatInput = ({selectedVehicleno}) => {
     setText("");
     setImg(null);
   }
+  const handlePressKey = (e) => {
+    if (e.code === 'Enter') {
+      handleSend();
+    }
+  }
 
 
   return (
     <div className='chatInput'>
-        <input type='text'placeholder='Type something...' onChange={e=>setText(e.target.value)}/>
+        <input type='text' onKeyPress={handlePressKey} placeholder='메시지를 입력하시오...' onChange={e=>setText(e.target.value)}
+        value={text}/>
         <div className="send">
             <img src="" alt="" />
             <input type='file' style={{display:"none"}} id="file" onChange={e=>setImg(e.target.files[0])}/>

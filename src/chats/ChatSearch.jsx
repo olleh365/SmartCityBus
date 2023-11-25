@@ -17,7 +17,6 @@ const ChatSearch = ({onSelectVehicleno}) => {
     const q = query(collection(db, "vehicleno"),where("vehicleno","==",vehiclenm));
 
     try{
-
       const querySnapshot = await getDocs(q);
       querySnapshot.forEach((doc) => {
         setVehicle(doc.data());
@@ -73,7 +72,7 @@ const ChatSearch = ({onSelectVehicleno}) => {
   return (
     <div className='chatSearch'>
         <div className='searchForm'>
-            <input type="text" placeholder='버스 찾기' onKeyDown={handleKey} onChange={e => setVehiclenm(e.target.value)}/>
+            <input type="text" placeholder='버스 찾기' onKeyDown={handleKey} onChange={e => setVehiclenm(e.target.value)} value={vehiclenm}/>
         </div>
         {err && <span>Bus not found!</span>}
         <div className='busChat' onClick={handleSelect}>

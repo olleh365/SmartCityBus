@@ -13,11 +13,12 @@ const Sidebar = ({
   return (
     
     <div className="left-sidebar">
-      <ul className="sidebar-menu">
-        
+      <ul className='sidebar-main'>
         <li> 
-          <a href="/ChatHome">채팅방</a>
+          <a href="/chathome">버스대화방 검색 👈</a>
         </li>
+      </ul>
+      <ul className="sidebar-menu">
         <li>
           <label>
             <input

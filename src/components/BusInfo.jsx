@@ -3,15 +3,23 @@
 import React, { useState, useEffect } from 'react';
 import './BusInfo.css';
 import { fetchBusArrivalInfo, fetchBusLocationInfo } from './apiService';
+import { db } from '../firebase';
+import { getDoc, doc, collection, onSnapshot } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
+
+let currentInfowindow = null;
 
 const BusInfo = ({  selectedBusStop, gybBusData, dgbBusData, error, hideBusInfo, map , setGybBusData,
   setDgbBusData }) => {
+    const navigate = useNavigate();
 
   const [refreshing, setRefreshing] = useState(false);
   const [busMarkers, setBusMarkers] = useState([]);
   
 
   const createMarker = (map, latitude, longitude, title, vehicleno) => {
+
+
     const marker = new window.kakao.maps.Marker({
       position: new window.kakao.maps.LatLng(latitude, longitude),
       map: map,
@@ -19,21 +27,53 @@ const BusInfo = ({  selectedBusStop, gybBusData, dgbBusData, error, hideBusInfo,
     }); 
     const iwRemoveable = true;
     const infowindow = new window.kakao.maps.InfoWindow({
-      content:
-      `
-      <div>
-        <p>${vehicleno}</p>
-        <button onclick="openChat('${vehicleno}')">Chat</button>
-      </div>
-    `, removable : iwRemoveable,
+      content:[
+        '<div>',
+        '<p>'+ '차량번호 : ' + vehicleno+'</p>',
+        '<div id="congestion-info"></div>',
+        '<button data-action="navigate-to-chathome">Chat</button>',
+    '</div>',
+  ].join('')
+    , removable : iwRemoveable,
     });
     window.kakao.maps.event.addListener(marker, 'click', function () {
-      infowindow.open(map, marker);
+      if (currentInfowindow) {
+        currentInfowindow.close();
+      }
+
+      fetchCongestionInfo(vehicleno, infowindow, map, marker);
+
+      currentInfowindow = infowindow;
     });
 
     return marker;
   };
-
+  const fetchCongestionInfo = (vehicleno, infowindow, map, marker) => {
+    try {
+      const docRef = doc(db, "vehicleno", vehicleno.toString());
+      const unsubscribe = onSnapshot(docRef, (docSnapshot) => {
+        if (docSnapshot.exists()) {
+          const vehicleData = docSnapshot.data();
+          console.log('Vehicle Data:', vehicleData);
+          const congestionInfo = document.getElementById('congestion-info');
+          if (congestionInfo) {
+            congestionInfo.innerHTML = `<strong>Congestion:</strong> ${vehicleData.congestion}`;
+          }
+        } else {
+          console.log('Vehicle data not found in Firestore for vehicleno:', vehicleno);
+        }
+      });
+  
+      infowindow.addListener('closeclick', function () {
+        unsubscribe();
+      });
+    } catch (error) {
+      console.error('Error fetching data from Firestore:', error);
+    }
+  
+    // Open the infowindow after fetching data
+    infowindow.open(map, marker);
+  };
   
 
   const handleBusItemClick = (routeId, cityCode) => {
@@ -98,12 +138,20 @@ const BusInfo = ({  selectedBusStop, gybBusData, dgbBusData, error, hideBusInfo,
   };
 
   useEffect(() => {
-    if (!map) {
-      console.log('Map not available in BusInfo component.');
-      return;
-    }
+  const handleClick = (event) => {
+    const target = event.target;
 
-  }, [map]);
+    if (target && target.dataset.action === 'navigate-to-chathome') {
+      navigate('/chathome');
+    }
+  };
+
+  document.addEventListener('click', handleClick);
+
+  return () => {
+    document.removeEventListener('click', handleClick);
+  };
+}, [navigate]);
 
   const renderBusData = (data, cityCode) => {
     if (!Array.isArray(data)) {
@@ -159,7 +207,7 @@ const BusInfo = ({  selectedBusStop, gybBusData, dgbBusData, error, hideBusInfo,
   return (
     <div className={'bus-info-container'}>
       <button className="hide-button" onClick={hideBusInfo}>
-        숨김
+        X
       </button>
       <div className="bus-data">
         <h2>버스 도착 정보</h2>
@@ -168,15 +216,7 @@ const BusInfo = ({  selectedBusStop, gybBusData, dgbBusData, error, hideBusInfo,
             <p>
               <strong>버스정류장:</strong> {selectedBusStop.nodeName}
             </p>
-            <p>
-              <strong>Node ID:</strong> {selectedBusStop.nodeId}
-            </p>
-            {error ? (
-              <p>{error}</p>
-            ) : (
-              <div className="bus-arrival-info">
-                <h3>버스 도착시간:</h3>
-                {refreshing ? (
+            {refreshing ? (
                   <div className="centered-spinner">
                     <span className="loading-indicator">
                       <img src="/busLogo.png" className="loading-image" />
@@ -187,9 +227,14 @@ const BusInfo = ({  selectedBusStop, gybBusData, dgbBusData, error, hideBusInfo,
                     onClick={() => handleRefresh()}
                     className="refresh-button"
                   >
-                    Refresh
+                    새로고침
                   </button>
                 )}
+            {error ? (
+              <p>{error}</p>
+            ) : (
+              <div className="bus-arrival-info">
+                <h3>버스 도착시간:</h3>
                 {renderBusData(gybBusData, '37100')}
                 {renderBusData(dgbBusData, '22')}
               </div>

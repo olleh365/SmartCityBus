@@ -6,10 +6,11 @@ import Messages from './Messages'
 import './styles.scss'
 import { doc, onSnapshot } from "firebase/firestore"
 import { db } from '../firebase'
+import { useNavigate } from 'react-router-dom';
 
 
 const Chat = ({selectedVehicleno}) => {
-
+  const navigate = useNavigate();
   const[chat, setChat] = useState([])
   useEffect(()=>{
     const getChat = () => {
@@ -26,13 +27,23 @@ const Chat = ({selectedVehicleno}) => {
     selectedVehicleno && getChat();
   },[selectedVehicleno]);
 
+  const handleIconClick = () => {
+    navigate('/');
+  };
+
 
   return (
     <div className='chat'>
         <div className='chatInfo'>
-            <span> {chat.routenm}버스 <br/>차량번호 : {chat.vehicleno}</span>
+          {selectedVehicleno?(
+
+            <span>{chat.routenm}버스 <br/>차량번호 : {chat.vehicleno}</span>
+            ) : (
+              <p></p>
+            )
+          }
             <div className="chatIcons">
-                <img src={'/xxx.png'} alt="" />
+                <span onClick={handleIconClick}>X</span>
             </div>
         </div>    
         <Messages selectedVehicleno={selectedVehicleno}/>

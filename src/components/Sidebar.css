@@ -10,13 +10,34 @@
     top: 0; 
     border-right: 3px solid #26272C;;
   }
-  
-  .sidebar-menu {
+
+  .sidebar-main {
     list-style: none;
     padding: 0;
     margin-top: 80px;
   }
   
+  .sidebar-main li {
+    padding: 10px 20px;
+  }
+
+  .sidebar-main li a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  .sidebar-main li a:hover {
+    background-color: #555;
+  }
+  
+  .sidebar-menu {
+    list-style: none;
+    padding: 0;
+
+  }
+
   .sidebar-menu li {
     padding: 10px 20px;
   }

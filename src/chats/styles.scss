@@ -137,8 +137,11 @@
                 color: lightgray;
 
                 .chatIcons{
+                    font-size: 20px;
+                    font-weight: bold;
                     display: flex;
                     gap: 10px; 
+                    cursor: pointer;
                     img{
                         height: 24px;
                         cursor: pointer;
