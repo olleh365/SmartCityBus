@@ -53,11 +53,13 @@ const Message = ({message}) => {
         <div className="messageInfo">
             <img src="/userImg.png" alt="" />
             <span>{displayName}</span>
-            <span>{formattedTime}</span>
+            
         </div>
         <div className="messageContent">
             <p>{message.text}</p>
             {message.img && <img src={message.img} alt="" />}
+            <span className='messageTime'>{formattedTime}</span>
+
         </div>
     </div>
   )

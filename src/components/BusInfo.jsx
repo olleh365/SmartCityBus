@@ -1,24 +1,28 @@
 // src/components/BusInfo.jsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import './BusInfo.css';
 import { fetchBusArrivalInfo, fetchBusLocationInfo } from './apiService';
 import { db } from '../firebase';
-import { getDoc, doc, collection, onSnapshot } from 'firebase/firestore';
+import { doc, onSnapshot } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
+import { VehicleContext } from '../context/VehicleContext';
+
+
 
 let currentInfowindow = null;
 
 const BusInfo = ({  selectedBusStop, gybBusData, dgbBusData, error, hideBusInfo, map , setGybBusData,
   setDgbBusData }) => {
     const navigate = useNavigate();
+    const { setVehicleno } =  useContext(VehicleContext);
 
   const [refreshing, setRefreshing] = useState(false);
   const [busMarkers, setBusMarkers] = useState([]);
-  
+  const [loading, setLoading] = useState(false);
+
 
   const createMarker = (map, latitude, longitude, title, vehicleno) => {
-
 
     const marker = new window.kakao.maps.Marker({
       position: new window.kakao.maps.LatLng(latitude, longitude),
@@ -28,19 +32,20 @@ const BusInfo = ({  selectedBusStop, gybBusData, dgbBusData, error, hideBusInfo,
     const iwRemoveable = true;
     const infowindow = new window.kakao.maps.InfoWindow({
       content:[
-        '<div>',
-        '<p>'+ '차량번호 : ' + vehicleno+'</p>',
+        '<div class="info-window">',
+        '<p>'+ '<' + vehicleno+ '>'+'</p>',
         '<div id="congestion-info"></div>',
-        '<button data-action="navigate-to-chathome">Chat</button>',
+        '<button class= "info-button" data-action="navigate-to-chathome">채팅방</button>',
     '</div>',
   ].join('')
     , removable : iwRemoveable,
     });
+    
     window.kakao.maps.event.addListener(marker, 'click', function () {
       if (currentInfowindow) {
         currentInfowindow.close();
       }
-
+      setVehicleno(vehicleno);
       fetchCongestionInfo(vehicleno, infowindow, map, marker);
 
       currentInfowindow = infowindow;
@@ -55,30 +60,42 @@ const BusInfo = ({  selectedBusStop, gybBusData, dgbBusData, error, hideBusInfo,
         if (docSnapshot.exists()) {
           const vehicleData = docSnapshot.data();
           console.log('Vehicle Data:', vehicleData);
+
+          const congestionLevel = vehicleData.congestion;
+          const congestionText = getCongestionText(congestionLevel);
+
           const congestionInfo = document.getElementById('congestion-info');
           if (congestionInfo) {
-            congestionInfo.innerHTML = `<strong>Congestion:</strong> ${vehicleData.congestion}`;
+            congestionInfo.innerHTML = `<strong>혼잡도:</strong> ${congestionText}`;
           }
         } else {
-          console.log('Vehicle data not found in Firestore for vehicleno:', vehicleno);
+          console.log('db에 vehicleno 데이터를 가져올 수 없음: ', vehicleno);
         }
       });
   
       infowindow.addListener('closeclick', function () {
         unsubscribe();
       });
+      
     } catch (error) {
-      console.error('Error fetching data from Firestore:', error);
+      console.error('Firestore error:', error);
     }
-  
-    // Open the infowindow after fetching data
     infowindow.open(map, marker);
   };
   
+  const getCongestionText = (congestionLevel) => {
+    if (congestionLevel <= 1) {
+      return '😄';
+    } else if (congestionLevel === 2) {
+      return '😐';
+    } else {
+      return '🤯';
+    }
+  };
 
   const handleBusItemClick = (routeId, cityCode) => {
-    console.log('Clicked Bus Item Route ID:', routeId);
-    
+    setLoading(true); 
+
     busMarkers.forEach((marker) => marker.setMap(null));
     setBusMarkers([]);
 
@@ -105,7 +122,10 @@ const BusInfo = ({  selectedBusStop, gybBusData, dgbBusData, error, hideBusInfo,
         }
       })
       .catch((error) => {
-        console.error('Error fetching bus location information', error);
+        console.error('버스위치정보 서버가 끊겼습니다.', error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -122,15 +142,13 @@ const BusInfo = ({  selectedBusStop, gybBusData, dgbBusData, error, hideBusInfo,
       fetchBusArrivalInfo(dgbNodeId, dgbCityCode, process.env.REACT_APP_API_KEY)
     ])
       .then(([gybData, dgbData]) => {
-        console.log('GYB API Response:', gybData);
-        console.log('DGB API Response:', dgbData);
         const newGybBusData = gybData.response.body.items.item;
         const newDgbBusData = dgbData.response.body.items.item;
         setGybBusData(newGybBusData);
         setDgbBusData(newDgbBusData);
       })
       .catch((error) => {
-        console.error('Error fetching bus arrival information', error);
+        console.error('버스도착정보 서버가 끊겼습니다.', error);
       })
       .finally(() => {
         setRefreshing(false);
@@ -152,6 +170,16 @@ const BusInfo = ({  selectedBusStop, gybBusData, dgbBusData, error, hideBusInfo,
     document.removeEventListener('click', handleClick);
   };
 }, [navigate]);
+
+const formatArrivalTime = (seconds) => {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  if(seconds>= 60){
+    return `${minutes}분 ${remainingSeconds}초`;
+  }else{
+    return `${remainingSeconds}초`;
+  }
+};
 
   const renderBusData = (data, cityCode) => {
     if (!Array.isArray(data)) {
@@ -190,7 +218,7 @@ const BusInfo = ({  selectedBusStop, gybBusData, dgbBusData, error, hideBusInfo,
               )}
               {item && item.arrtime ? (
                 <>
-                  <strong>남은 도착시간:</strong> {item.arrtime}
+                  <strong>남은 도착시간:</strong> {formatArrivalTime(item.arrtime)}
                   <br />
                 </>
               ) : null}
@@ -227,11 +255,15 @@ const BusInfo = ({  selectedBusStop, gybBusData, dgbBusData, error, hideBusInfo,
                     onClick={() => handleRefresh()}
                     className="refresh-button"
                   >
-                    새로고침
+                    ↺
                   </button>
                 )}
-            {error ? (
-              <p>{error}</p>
+            {loading ? (
+              <div className="centered-spinner">
+                <span className="loading-indicator">
+                  <img src="/busLogo.png" className="loading-image" alt="Loading" />
+                </span>
+              </div>
             ) : (
               <div className="bus-arrival-info">
                 <h3>버스 도착시간:</h3>

@@ -10,7 +10,7 @@ const ChatNavbar = () => {
 
   return (
     <div className='chatNavbar'>
-        <span className="chatLogo">스마트버스팅</span>
+        <span className="chatLogo">스마트버스챗</span>
         <div className="user">
             <img src="/userImg.png" alt=""/>
             <span>{currentUser.displayName}</span>
