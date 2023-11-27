@@ -4,14 +4,15 @@ import React, { useContext, useState} from 'react'
 import './styles.scss'
 import { collection, doc, setDoc, where, getDocs, query, getDoc, updateDoc, serverTimestamp} from "firebase/firestore"; 
 import { db } from '../firebase';
-import { AuthContext } from '../context/AuthContext'
+import { AuthContext } from '../context/AuthContext';
+import { VehicleContext } from '../context/VehicleContext';
 
 const ChatSearch = ({onSelectVehicleno}) => {
-  const [vehiclenm, setVehiclenm] = useState("")
+  const { selectedVehicleno } = useContext(VehicleContext);
+  const [vehiclenm, setVehiclenm] = useState(selectedVehicleno)
   const [vehicle , setVehicle] = useState(null)
   const [err, setErr] = useState(false)
   const {currentUser} = useContext(AuthContext);
-
 
   const handleSearch = async () => {
     const q = query(collection(db, "vehicleno"),where("vehicleno","==",vehiclenm));
@@ -34,7 +35,6 @@ const ChatSearch = ({onSelectVehicleno}) => {
 
 
     if (vehicle) {
-
       onSelectVehicleno(vehicle.vehicleno);
 
       const chatRoomRef = doc(db, 'chats', vehicle.vehicleno);
@@ -66,21 +66,24 @@ const ChatSearch = ({onSelectVehicleno}) => {
       }
 
     }
-
+    setVehicle(null)
+    setVehiclenm("")
   };
 
   return (
     <div className='chatSearch'>
         <div className='searchForm'>
-            <input type="text" placeholder='버스 찾기' onKeyDown={handleKey} onChange={e => setVehiclenm(e.target.value)} value={vehiclenm}/>
+            <input type="text" placeholder='🔎 버스 찾기' onKeyDown={handleKey} onChange={e => setVehiclenm(e.target.value)} value={vehiclenm}/>
         </div>
         {err && <span>Bus not found!</span>}
-        <div className='busChat' onClick={handleSelect}>
-            <img src='/busLogo.png' />
+        {vehicle && (
+          <div className='busChat' onClick={handleSelect}>
+            <img src={vehicle.photoURL} />
             <div className='busChatInfo'>
                 <span>{vehicle && vehicle.vehicleno}</span>
             </div>
         </div>
+          )}
     </div>
   )
 }

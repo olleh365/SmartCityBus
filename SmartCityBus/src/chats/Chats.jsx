@@ -33,7 +33,7 @@ const Chats = ({ selectedVehicleno }) => {
   return (
     <div className='chats'>
         <div className='busChat'>
-            <img src='/busLogo.png' />
+          <img src={chats.photoURL} />
             <div className='busChatInfo'>
                 <span>{chats.vehicleno}</span>
                 <p></p>

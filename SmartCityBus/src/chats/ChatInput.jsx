@@ -36,13 +36,6 @@ const ChatInput = ({selectedVehicleno}) => {
                 img:downloadURL,
               })
             });
-            // 채팅 후 자동 삭제 요청
-            await fetch(`/delete/text/${selectedVehicleno}`, {
-              method: 'DELETE',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-            });
           });
         }
       )
@@ -54,13 +47,6 @@ const ChatInput = ({selectedVehicleno}) => {
           senderId: currentUser.uid,
           date: Timestamp.now(),
         })
-      });
-      // 채팅 후 자동 삭제 요청
-      await fetch(`/delete/text/${selectedVehicleno}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
       });
     }
     setText("");
