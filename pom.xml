@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.example</groupId>
-    <artifactId>smartBus-API</artifactId>
+    <artifactId>SmartCityBus</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>smartBus-API</name>
     <description>smartBus-API</description>
