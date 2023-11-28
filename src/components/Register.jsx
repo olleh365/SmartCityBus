@@ -50,7 +50,7 @@ const Register = () => {
                     <button className="button">가입하기</button>
                     {err && <span>무슨 문제가 있습니다.</span>}
                 </form>
-                <h1><Link to= '/Login'>로그인</Link></h1>
+                <h1><Link to= '/Login'>로그인</Link>&nbsp;&nbsp;&nbsp; <Link to='/'>뒤로가기</Link></h1>
                 
             </div>
         </div>

@@ -81,12 +81,14 @@
   .bus-item {
     border: 1px solid #ddd;
     padding: 15px;
-    margin: 5px 0;
+    margin: 7px 0;
     border-radius: 5px;
     background-color: #1D1E20;
     list-style-type: none;
     margin-left: -42px;
     border-bottom: 4px solid #956EE7;
+    
+
   }
   
   h3 {
@@ -115,7 +117,16 @@
   cursor: pointer;
   font-size: 15px;
   font-weight: bold;
+  padding: 2px 5px;
 }
 .info-button:hover {
   background-color: #A68AEA; 
+}
+
+/* .busitem-list ul{
+  margin-top: -8.5px;
+} */
+
+.busitem-list li{
+  margin-left: 0px;
 }
