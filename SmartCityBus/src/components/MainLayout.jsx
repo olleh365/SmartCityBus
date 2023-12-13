@@ -169,16 +169,29 @@ const MainLayout = () => {
 
       busStops.forEach((busStop) => {
         const { latitude, longitude, nodeName } = busStop;
-        const imageSrc = '/bus_station_icon.png';
-        const imageSize = new kakao.maps.Size(30, 46);
-        const imageOption = {offset: new kakao.maps.Point(22, 41)};
-        const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
+        const imageSrc = '/bus_station.png';
+        const imageSize = new kakao.maps.Size(40, 40);
+        const imageOption = {offset: new kakao.maps.Point(26, 26)};
+        const markerImage = new kakao.maps.MarkerImage
+        (imageSrc, imageSize, imageOption);
         const marker = new window.kakao.maps.Marker({
           position: new window.kakao.maps.LatLng(latitude, longitude),
           map: map,
           title: nodeName,
           image: markerImage,
         });
+
+        const infowindow = new kakao.maps.InfoWindow({
+          content : '<div style="width:150px;text-align:center;font-weight:bold; padding: 5px;">'+nodeName+'</div>'
+      });
+
+      kakao.maps.event.addListener(marker, 'mouseover', function() {
+          infowindow.open(map, marker);
+      });
+      
+      kakao.maps.event.addListener(marker, 'mouseout', function() {
+          infowindow.close();
+      });
 
         window.kakao.maps.event.addListener(marker, 'click', () => {
           handleBusStopClick(busStop);

@@ -12,7 +12,7 @@
   height: 93.2vh; 
   border: 2px solid #26272C;
   border-right-width: 4px;
-  margin-left: 252px;
+  margin-left: 275px;
   border-radius: 5px;
 }
 
@@ -27,3 +27,6 @@
   }
 }
 
+.info-text{
+  text-align: center;
+}

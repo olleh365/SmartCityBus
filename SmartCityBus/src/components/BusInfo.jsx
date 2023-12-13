@@ -24,16 +24,20 @@ const BusInfo = ({  selectedBusStop, gybBusData, dgbBusData, error, hideBusInfo,
 
   const createMarker = (map, latitude, longitude, title, vehicleno) => {
 
+    const imageSrc = '/loca_icon.png'; 
+    const imageSize = new window.kakao.maps.Size(30, 30);
+    const markerImage = new window.kakao.maps.MarkerImage(imageSrc, imageSize);
+  
     const marker = new window.kakao.maps.Marker({
       position: new window.kakao.maps.LatLng(latitude, longitude),
       map: map,
       title: title,
-    }); 
+      image: markerImage, 
+    });
     const iwRemoveable = true;
     const infowindow = new window.kakao.maps.InfoWindow({
       content:[
-        '<div class="info-window">',
-        '<p>'+ '<' + vehicleno+ '>'+'</p>',
+        '<div style="width:150px;height:102px; padding:1px;">',
         '<div id="congestion-info"></div>',
         '<button class= "info-button" data-action="navigate-to-chathome">채팅방</button>',
     '</div>',
@@ -66,7 +70,7 @@ const BusInfo = ({  selectedBusStop, gybBusData, dgbBusData, error, hideBusInfo,
 
           const congestionInfo = document.getElementById('congestion-info');
           if (congestionInfo) {
-            congestionInfo.innerHTML = `<strong>혼잡도:</strong> ${congestionText}`;
+            congestionInfo.innerHTML = `${vehicleData.routenm}버스<br><${vehicleData.vehicleno}><br>혼잡도: <strong style="font-size: 30px;">${congestionText}</strong`
           }
         } else {
           console.log('db에 vehicleno 데이터를 가져올 수 없음: ', vehicleno);
@@ -86,7 +90,7 @@ const BusInfo = ({  selectedBusStop, gybBusData, dgbBusData, error, hideBusInfo,
   const getCongestionText = (congestionLevel) => {
     if (congestionLevel <= 1) {
       return '😄';
-    } else if (congestionLevel === 2) {
+    } else if (congestionLevel == 2) {
       return '😐';
     } else {
       return '🤯';
@@ -182,26 +186,29 @@ const formatArrivalTime = (seconds) => {
 };
 
   const renderBusData = (data, cityCode) => {
+    if (data === undefined) {
+      return null;
+    }
+
     if (!Array.isArray(data)) {
       data = [data];
     }
-    return (
-      <ul>
-        {data && data.length > 0 ? (
-          data.map((item, index) => (
+
+    if (data && data.length > 0) {
+      return (
+        <div className='busitem-list'>
+          {data.map((item, index) => (
             <li
-              key={index}
-              className="bus-item"
-              onClick={() => handleBusItemClick(item.routeid, cityCode)}
+            key={index}
+            className="bus-item"
+            onClick={() => handleBusItemClick(item.routeid, cityCode)}
             >
               {item && item.routeno ? (
                 <>
                   <strong></strong> <strong>{item.routeno} 버스</strong>
                   <br />
                 </>
-              ) : (
-                'No bus location data available.'
-              )}
+              ) : null}
               {item && item.vehicletp ? (
                 <>
                   <strong></strong> {item.vehicletp}
@@ -213,9 +220,7 @@ const formatArrivalTime = (seconds) => {
                   <strong>남은 정류장:</strong> {item.arrprevstationcnt}
                   <br />
                 </>
-              ) : (
-                ''
-              )}
+              ) : null}
               {item && item.arrtime ? (
                 <>
                   <strong>남은 도착시간:</strong> {formatArrivalTime(item.arrtime)}
@@ -223,14 +228,14 @@ const formatArrivalTime = (seconds) => {
                 </>
               ) : null}
             </li>
-          ))
-        ) : (
-          <p>No bus location data available</p>
-        )}
-      </ul>
+          ))}
+            </div>
     );
+  }else{
+    return null;
+  }
   };
-
+  
   
   return (
     <div className={'bus-info-container'}>

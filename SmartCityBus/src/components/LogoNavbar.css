@@ -1,7 +1,7 @@
 /* src/components/LogoNavbar.css */
 .logoNavbar{
   display: flex;
-  width: 240px;
+  width: 265px;
   border-right: 3px solid #26272C;
   gap: 6px;
   height: 42px;

@@ -36,7 +36,7 @@ const Login = () => {
                     <button className="button">로그인</button>
                     {err && <span>무슨 문제가 있습니다.</span>}
                 </form>
-                <h1><Link to='/Register'>회원가입</Link></h1>
+                <h1><Link to='/Register'>회원가입</Link>&nbsp;&nbsp;&nbsp; <Link to='/'>뒤로가기</Link></h1>
             </div>
         </div>
     );
